@@ -47,6 +47,7 @@ void genetic(int diedai);
 
 int main()
 {
+	/*
 	//输入genetic对应的适应度
 	sheetGen->writeStr(1, 0, L"节点个数");
 	for (int nodeG = 5; nodeG <= 50; nodeG++)
@@ -61,11 +62,14 @@ int main()
 	for (int i = 5; i <= 50; i++)
 		sheetCuc->writeNum(1, i - 4, i);
 
-	taskMachineGraphFunction(8);
+	*/
 
 	//---------------------------------------主要代码-----------------------------------------------
 	
-
+	for (int diedai=5;diedai<=50;diedai++)
+	{
+		taskMachineGraphFunction(diedai);
+	}
 
 
 
@@ -88,7 +92,7 @@ int main()
 
 
 
-
+	/*
 
 	//保存并输出BookGen
 	bookGenetic->save(L"genetic_5-50");
@@ -96,7 +100,7 @@ int main()
 
 	//保存并输出BookCuc
 	bookCuckoo->save(L"cuckoo_5-50");
-	bookCuckoo->release();
+	bookCuckoo->release();*/
 }
 
 
@@ -116,7 +120,7 @@ void taskMachineGraphFunction(int diedai)
 	graphRandom(graph);
 
 	//将graph输出到graph_diedai.txt
-	ofstream output;
+	/*ofstream output;
 	string fileName = "graph" + to_string(diedai)+".txt";
 	const char*  p = fileName.data();
 
@@ -146,7 +150,7 @@ void taskMachineGraphFunction(int diedai)
 	for (int i = 0; i < machineNum; i++)
 		output << machine[i] << endl;
 
-	output.close();
+	output.close();*/
 }
 
 void genetic(int diedai)
