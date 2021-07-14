@@ -14,7 +14,8 @@ using namespace std;
 int randomInt(int low, int high)
 {
 	int range = (high - low) + 1;
-	srand((unsigned)time(nullptr));
+//	srand((unsigned)time(nullptr));
+	//!!!!!千万不要一直初始化随机数种子！！！！！！！！
 	int x = rand() % range;
 	return low + x;
 }

@@ -1,5 +1,6 @@
 ﻿// mixed-project.cpp : 此文件包含 "main" 函数。程序执行将在此处开始并结束。
 //
+#pragma warning(disable : 4996)
 #include <iostream>
 #include "Genetic.h"
 #include "MyGraph.h"
@@ -101,6 +102,7 @@ int main()
 	for (int i = 5; i <= 50; i++)
 		sheetCuc->writeNum(1, i - 4, i);
 
+	srand(time(nullptr));
 	
 
 	//---------------------------------------主要代码-----------------------------------------------
@@ -120,11 +122,11 @@ int main()
 	//-------------------------------------主要代码-----------------------------------------------------
 
 	//保存并输出BookGen
-	bookGenetic->save(L"genetic_5-50");
+	bookGenetic->save(L"genetic_5-50.xlsx");
 	bookGenetic->release();
 
 	//保存并输出BookCuc
-	bookCuckoo->save(L"cuckoo_5-50");
+	bookCuckoo->save(L"cuckoo_5-50.xlsx");
 	bookCuckoo->release();
 
 	//输出时间：年月日 时分秒
@@ -214,7 +216,7 @@ void genetic(int diedai)
 	//开始遗传迭代了
 	int Xnration = 0; int i = 0;
 
-	showTime();
+//	showTime();
 	initGroup(seed);
 	evaluate();
 	selectBest();
@@ -315,7 +317,7 @@ void cuckoo(int index)
 	sheetCuc->writeStr(359, index - 4, L"运行时间(毫秒)：");
 	sheetCuc->writeNum(360, index - 4, time);
 
-	std::cout << "运行时间" << time << "毫秒" << std::endl;
+//	std::cout << "运行时间" << time << "毫秒" << std::endl;
 }
 
 
@@ -501,5 +503,5 @@ void myShowtime() {
 	char buffer[100];
 	struct tm* tm = localtime(&now);
 	size_t len = strftime(buffer, 100, "%d %B %Y %I:%M:%S %p", tm);
-	std::cout << buffer << std::endl;
+//	std::cout << buffer << std::endl;
 }

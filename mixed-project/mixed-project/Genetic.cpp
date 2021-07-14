@@ -400,7 +400,7 @@ void report(int Xnration, libxl::Sheet* sheet, int nodenn)
 	best_val = nodeMachine[GROUP_SCALE].Fitness;
 
 	//	cout << "  " << setw(8) << Xnration
-	cout << "  " << setw(14) << best_val << endl;
+//	cout << "  " << setw(14) << best_val << endl;
 	sheet->writeNum(Xnration + 2, nodenn - 4, best_val);
 
 	return;
