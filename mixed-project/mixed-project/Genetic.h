@@ -7,7 +7,7 @@ using namespace std;
 
 //遗传算法参数，种群规模（0~100）、繁殖代数、函数变量个数、交叉概率、编译概率
 # define GROUP_SCALE    10   
-# define MAX_GENS       350
+# define MAX_GENS       500
 # define N_VARS         510
 # define P_MATING       0.8
 # define P_MUTATION     0.25

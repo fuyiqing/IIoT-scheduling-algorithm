@@ -36,7 +36,7 @@ extern double nodes[NODE_MAX];
 //每次迭代的鸟巢数
 constexpr int NestNum = 10;
 //最大迭代次数
-constexpr int MaxIterationTimes = 350;
+constexpr int MaxIterationTimes = 500;
 //被宿主发现的概率
 constexpr double Pa = 0.55;
 //最大种群规模
@@ -92,12 +92,12 @@ int main()
 	sheetGen->writeStr(1, 0, L"节点个数");
 	for (int nodeG = 5; nodeG <= 50; nodeG++)
 		sheetGen->writeNum(1, nodeG - 4, nodeG);
-	for (int iiG = 1; iiG <= 350; iiG++)
+	for (int iiG = 1; iiG <= 500; iiG++)
 		sheetGen->writeNum(iiG + 1, 0, iiG);
 
 	//输入cuckoo对应的适应度
 	sheetCuc->writeStr(1,0,L"节点个数");
-	for (int i = 1; i <= 350; i++)
+	for (int i = 1; i <= 500; i++)
 		sheetCuc->writeNum(i + 1, 0, i);
 	for (int i = 5; i <= 50; i++)
 		sheetCuc->writeNum(1, i - 4, i);
@@ -233,8 +233,8 @@ void genetic(int diedai)
 
 	finish = clock();
 	duration = 1000 * (finish - start) / CLOCKS_PER_SEC;
-	sheetGen->writeStr(358, diedai - 4, L"总共用时(毫秒)：");
-	sheetGen->writeNum(359, diedai - 4, duration);
+	sheetGen->writeStr(508, diedai - 4, L"总共用时(毫秒)：");
+	sheetGen->writeNum(509, diedai - 4, duration);
 	//printf("\n总共用时%lf毫秒\n", duration);
 }
 
@@ -314,8 +314,8 @@ void cuckoo(int index)
 
 	finish = clock();
 	double time = 1000 * (finish - start) / CLOCKS_PER_SEC;
-	sheetCuc->writeStr(359, index - 4, L"运行时间(毫秒)：");
-	sheetCuc->writeNum(360, index - 4, time);
+	sheetCuc->writeStr(509, index - 4, L"运行时间(毫秒)：");
+	sheetCuc->writeNum(510, index - 4, time);
 
 //	std::cout << "运行时间" << time << "毫秒" << std::endl;
 }
