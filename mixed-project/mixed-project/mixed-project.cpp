@@ -80,6 +80,10 @@ void genetic(int diedai);
 //*@ note    cuckoo-algorithm算法 对每一个图以及对应的task和machine生成对应的最优值 
 void cuckoo(int diedai);
 
+//*@ param 没有参数
+//*@ note    输出当前时间（年月日 时分秒）
+void myShowtime();
+
 int main()
 {
 	
@@ -113,29 +117,7 @@ int main()
 		cuckoo(diedai);
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	//-------------------------------------主要代码-----------------------------------------------------
-
-
-
-	
 
 	//保存并输出BookGen
 	bookGenetic->save(L"genetic_5-50");
@@ -145,8 +127,8 @@ int main()
 	bookCuckoo->save(L"cuckoo_5-50");
 	bookCuckoo->release();
 
-	clock_t f = clock();
-	cout <<endl<< clock() << endl;
+	//输出时间：年月日 时分秒
+	myShowtime();
 }
 
 
@@ -511,4 +493,13 @@ int my_i4_uniform_ab(int a, int b, int &seed)
 	}
 
 	return value;
+}
+
+
+void myShowtime() {
+	time_t now = time(nullptr);
+	char buffer[100];
+	struct tm* tm = localtime(&now);
+	size_t len = strftime(buffer, 100, "%d %B %Y %I:%M:%S %p", tm);
+	std::cout << buffer << std::endl;
 }
