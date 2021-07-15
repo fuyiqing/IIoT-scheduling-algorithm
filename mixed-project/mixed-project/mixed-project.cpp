@@ -40,7 +40,7 @@ constexpr int MaxIterationTimes = 500;
 //被宿主发现的概率
 constexpr double Pa = 0.55;
 //最大种群规模
-# define N_VARS         510
+# define N_VARS     510
 //自变量结构体
 struct Nest {
 	int Xn[N_VARS];      //存放变量值(即机器索引)
