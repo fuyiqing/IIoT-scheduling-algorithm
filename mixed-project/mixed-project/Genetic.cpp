@@ -366,7 +366,7 @@ double r8_uniform_ab(double a, double b, int &seed)
 }
 
 //输出每一代进化的结果
-void report(int Xnration, libxl::Sheet* sheet, int nodenn)
+void report(int Xnration, libxl::Sheet* sheet)
 {
 	double avg;
 	double best_val;
@@ -401,7 +401,7 @@ void report(int Xnration, libxl::Sheet* sheet, int nodenn)
 
 	//	cout << "  " << setw(8) << Xnration
 //	cout << "  " << setw(14) << best_val << endl;
-	sheet->writeNum(Xnration + 2, nodenn - 4, best_val);
+	sheet->writeNum(machineNum-3, nodeNum-4, best_val);
 
 	return;
 }

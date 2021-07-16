@@ -224,8 +224,6 @@ void criticalPath(MyGraph& graph, double* nodes, int length)
 			}
 		}
 	}
-
-
 	//displayGraph(graph);
 
 

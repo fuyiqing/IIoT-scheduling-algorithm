@@ -73,19 +73,29 @@ Sheet* sheetCuc = bookCuckoo->addSheet(L"Sheet1");
 void taskMachineGraphFunction(int diedai);
 
 //*@ param diedai 节点个数
+//*@ param mm     机器个数
+//*@ note    对全局变量graph进行操作：初始化，随机化 
+//*@ note    对全局变量task和machine进行随机化
+void taskMachineGraphFunction(int diedai, int mm);
+
+
 //*@ param 没有其他输入参数，输入参数都是全局变量
 //*@ note    genetic-algorithm算法  对每一个图以及对应的task和machine生成对应的最优值 
-void genetic(int diedai);
+void genetic();
 
-//*@ param diedai 节点个数
+
+//*@ param 没有其他输入参数，输入参数都是全局变量
 //*@ note    cuckoo-algorithm算法 对每一个图以及对应的task和machine生成对应的最优值 
-void cuckoo(int diedai);
+void cuckoo();
+
+
 
 //*@ param 没有参数
 //*@ note    输出当前时间（年月日 时分秒）
 void myShowtime();
 
-int main()
+//5-50个节点的两个算法图像 对应的主函数
+/*int main()
 {
 	
 	//输入genetic对应的适应度
@@ -127,6 +137,59 @@ int main()
 
 	//保存并输出BookCuc
 	bookCuckoo->save(L"cuckoo_5-50.xlsx");
+	bookCuckoo->release();
+
+	//输出时间：年月日 时分秒
+	myShowtime();
+}*/
+
+//两个算法对应的三维图的主函数
+int main()
+{
+	//输入genetic对应的适应度
+	sheetGen->writeStr(1, 0, L"横轴节点个数纵轴机器个数");
+	for (int nodeG = 5; nodeG <= 50; nodeG++)
+		sheetGen->writeNum(1, nodeG - 4, nodeG);
+	//sheetGen->writeStr(2,0,L"机器个数");
+	for (int iiG = 5; iiG <= 50; iiG++)
+		sheetGen->writeNum(iiG -3, 0, iiG);
+
+	//输入cuckoo对应的适应度
+	sheetCuc->writeStr(1, 0, L"横轴节点个数纵轴机器个数");
+	for (int i = 5; i <= 50; i++)
+		sheetCuc->writeNum(i -3, 0, i);
+	for (int i = 5; i <= 50; i++)
+		sheetCuc->writeNum(1, i - 4, i);
+
+	srand(time(nullptr));
+
+
+	//---------------------------------------主要代码-----------------------------------------------
+
+	for (int diedai = 5; diedai <= 50; diedai++)
+	{
+		for (int mm = 5; mm <=50 ; mm++)
+		{
+			//先对机器、任务、图进行初始化并存在txt文件中
+			taskMachineGraphFunction(diedai,mm);
+
+			//首先开始进行遗传算法
+			genetic();
+
+			//其次开始布谷鸟算法
+			cuckoo();
+
+		}
+		
+	}
+	//-------------------------------------主要代码-----------------------------------------------------
+
+	//保存并输出BookGen
+	bookGenetic->save(L"genetic_5-50.xls");
+	bookGenetic->release();
+
+	//保存并输出BookCuc
+	bookCuckoo->save(L"cuckoo_5-50.xls");
 	bookCuckoo->release();
 
 	//输出时间：年月日 时分秒
@@ -183,17 +246,14 @@ void taskMachineGraphFunction(int diedai)
 	output.close();
 }
 
-void genetic(int diedai)
+void taskMachineGraphFunction(int diedai,int mm)
 {
-	clock_t start, finish;
-	double  duration;
-	start = clock();
 	//先试试解决八个
 	nodeNum = diedai;
 
 	//先初始化task和machine
 	taskNum = diedai;
-	machineNum = ((int)(sqrt(taskNum))) * 2;
+	machineNum = mm;
 	taskInit(task, taskNum);
 	machineInit(machine, machineNum);
 
@@ -201,6 +261,46 @@ void genetic(int diedai)
 	graphInit(graph, nodeNum);
 	graphRandom(graph);
 
+	//将graph输出到graph_diedai.txt
+	ofstream output;
+	string fileName = "graph" + to_string(diedai) + ".txt";
+	const char*  p = fileName.data();
+
+	output.open(p);
+	output << "digraph D" << diedai << "{" << endl;
+	for (int i = 0; i < nodeNum; i++)
+	{
+		Arc* arc = graph.nodes[i].edge;
+		while (arc)
+		{
+			string x = to_string(i) + "->" + to_string(arc->go) + ";";
+			output << x << endl;
+			arc = arc->next;
+		}
+	}
+	output << "}" << endl;
+
+	//输出task数组
+	output << endl << endl;
+	output << "task:" << taskNum << "个" << endl;
+	for (int i = 0; i < taskNum; i++)
+		output << task[i] << endl;
+
+	//输出machine数组
+	output << endl << endl;
+	output << "machine:" << machineNum << "个" << endl;
+	for (int i = 0; i < machineNum; i++)
+		output << machine[i] << endl;
+
+	output.close();
+}
+
+void genetic()
+{
+	clock_t start, finish;
+	double  duration;
+	start = clock();
+	
 	//初始化种群
 	initGroup(seed);
 	//计算适应度
@@ -208,24 +308,15 @@ void genetic(int diedai)
 	//选择最优的个体放入nodeMachine[GROUP_SCALE]中 
 	selectBest();
 
-	//这上面的代码都测试成功了
-	//记得把Population数组替换成nodeMachine
-
-
-
 	//开始遗传迭代了
-	int Xnration = 0; int i = 0;
+	int Xnration = 0;
 
-//	showTime();
-	initGroup(seed);
-	evaluate();
-	selectBest();
 	for (Xnration = 0; Xnration < MAX_GENS; Xnration++)
 	{
 		selector(seed);
 		crossover(seed);
 		mutate(seed);
-		report(Xnration, sheetGen, diedai);
+		report(Xnration, sheetGen);
 		evaluate();
 		elitist();
 	}
@@ -233,13 +324,13 @@ void genetic(int diedai)
 
 	finish = clock();
 	duration = 1000 * (finish - start) / CLOCKS_PER_SEC;
-	sheetGen->writeStr(508, diedai - 4, L"总共用时(毫秒)：");
-	sheetGen->writeNum(509, diedai - 4, duration);
+	//sheetGen->writeStr(508, diedai - 4, L"总共用时(毫秒)：");
+	//sheetGen->writeNum(509, diedai - 4, duration);
 	//printf("\n总共用时%lf毫秒\n", duration);
 }
 
 
-void cuckoo(int index)
+void cuckoo()
 {
 	//记录运行时间
 	clock_t start, finish;
@@ -303,19 +394,18 @@ void cuckoo(int index)
 		BestNestCurrent = findBetterNest(current_nestPop);//现在的最优鸟巢位置
 		int nodeNew[NODE_MAX] = {};
 		bool flag = false;
-		for (int j = 0; j < nodeNum; j++) {
+		for (int j = 0; j < nodeNum; j++) 
 			nodeNew[j] = current_nestPop[BestNestCurrent].Xn[j];
-		}
 
-		sheetCuc->writeNum(num + 2, index - 4, current_nestPop[BestNestCurrent].fitness);
+		sheetCuc->writeNum(machineNum-3, nodeNum-4, current_nestPop[BestNestCurrent].fitness);
 		//			printf("%lf\n", current_nestPop[BestNestCurrent].fitness);
 		num++;
 	}
 
 	finish = clock();
 	double time = 1000 * (finish - start) / CLOCKS_PER_SEC;
-	sheetCuc->writeStr(509, index - 4, L"运行时间(毫秒)：");
-	sheetCuc->writeNum(510, index - 4, time);
+	//sheetCuc->writeStr(509, index - 4, L"运行时间(毫秒)：");
+	//sheetCuc->writeNum(510, index - 4, time);
 
 //	std::cout << "运行时间" << time << "毫秒" << std::endl;
 }
@@ -389,6 +479,7 @@ std::vector<Nest> levy(std::vector<Nest> OldNestPop, std::size_t bestNum)
 		for (int j = 0; j < nodeNum; j++)
 		{
 			step[j] = (i.Xn[j] - OldNestPop[bestNum].Xn[j])*R(e) * R(e) / (pow(abs(R1(e)), 1 / beta));
+			
 		}
 		//按范围更新NODE
 		for (int j = 0; j < nodeNum; j++)
