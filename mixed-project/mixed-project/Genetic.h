@@ -14,11 +14,11 @@ using namespace std;
 
 //task 任务量最大值、最小值、机器速度最大值最小值
 //task 单位：TFLO （T个浮点运算） 0.05-0.1
-#define TASK_MIN 0.05
-#define TASK_MAX 0.1
+#define TASK_MIN 0.3
+#define TASK_MAX 0.15
 //machine单位： TFLOPS （T个浮点运算/秒） 0.015-0.025
-#define MACHINE_MAX 4
-#define MACHINE_MIN 1
+#define MACHINE_MAX 10
+#define MACHINE_MIN 4
 //目的：将最优适应度值控制在0-1之间
 
 //适应度最大值
