@@ -5,6 +5,15 @@ using namespace std;
 
 #define  PI    3.14159265358979323846
 
+
+//machine列表（单位：MFLops）
+//低端 machine
+constexpr double machineLow[20] = { 80,64,15,30,50,80,72,25,48,64,63,24,16,80,32,48,32,48,70,24 };
+//中端machine
+constexpr double machineMid[20] = { 550,280,120,180,150,200,300,252,500,600,800,100,960,266,240,200,100,300,264,480 };
+//高端machine
+constexpr double machineHigh[20] = { 2500,1000,2200,1800,1400,1500,1200,1100,1176,1900,2300,2500,2600,1600,1700,1800,1300,2200,3200,3000 };
+
 //遗传算法参数，种群规模（0~100）、繁殖代数、函数变量个数、交叉概率、编译概率
 # define GROUP_SCALE    10   
 # define MAX_GENS       500
@@ -12,13 +21,14 @@ using namespace std;
 # define P_MATING       0.8
 # define P_MUTATION     0.25
 
-//task 任务量最大值、最小值、机器速度最大值最小值
-//task 单位：TFLO （T个浮点运算） 0.05-0.1
-#define TASK_MIN 0.3
-#define TASK_MAX 0.15
+//低端机器：50-100M
+//中端机器：
+//高端机器：
+#define TASK_MIN 50
+#define TASK_MAX 100
 //machine单位： TFLOPS （T个浮点运算/秒） 0.015-0.025
-#define MACHINE_MAX 10
-#define MACHINE_MIN 4
+//#define MACHINE_MAX 10
+//#define MACHINE_MIN 4
 //目的：将最优适应度值控制在0-1之间
 
 //适应度最大值

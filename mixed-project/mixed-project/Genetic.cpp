@@ -15,6 +15,9 @@
 using namespace libxl;
 
 extern int seed;
+//extern  constexpr double machineLow[20];
+//extern  constexpr double machineMid[20];
+//extern double machineHigh[20];
 
 //定义一个graph
 MyGraph graph;
@@ -512,7 +515,8 @@ void taskInit(double *task, int length)
 			task[i] = 0;
 			continue;
 		}
-		task[i] = r8_uniform_ab(TASK_MIN, TASK_MAX, seed);
+		//首先写低端的
+		task[i] = r8_uniform_ab(TASK_MIN,TASK_MAX,seed);
 	}
 }
 
@@ -522,7 +526,8 @@ void machineInit(double *machine, int length)
 	{
 		while (machine[i] == 0)
 		{
-			machine[i] = r8_uniform_ab(MACHINE_MIN, MACHINE_MAX, seed);
+			int m = i4_uniform_ab(0,20,seed);
+			machine[i] = machineLow[m];
 		}
 	}
 }
