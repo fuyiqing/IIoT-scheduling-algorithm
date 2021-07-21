@@ -21,11 +21,11 @@ constexpr double machineHigh[20] = { 2500,1000,2200,1800,1400,1500,1200,1100,117
 # define P_MATING       0.8
 # define P_MUTATION     0.25
 
-//低端机器：50-100M
+//低端机器：(50-100)/90M (保证最优值为0-1)
 //中端机器：
 //高端机器：
-#define TASK_MIN 50
-#define TASK_MAX 100
+#define TASK_MIN 0.5555555556
+#define TASK_MAX 1.111111111
 //machine单位： TFLOPS （T个浮点运算/秒） 0.015-0.025
 //#define MACHINE_MAX 10
 //#define MACHINE_MIN 4
