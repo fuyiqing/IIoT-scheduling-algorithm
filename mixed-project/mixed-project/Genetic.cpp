@@ -13,7 +13,7 @@
 #include "libxl.h"
 
 using namespace libxl;
-
+extern ofstream outGenetic;
 extern int seed;
 //extern  constexpr double machineLow[20];
 //extern  constexpr double machineMid[20];
@@ -429,7 +429,11 @@ void report(int Xnration, libxl::Sheet* sheet)
 
 	//	cout << "  " << setw(8) << Xnration
 //	cout << "  " << setw(14) << best_val << endl;
-	sheet->writeNum(machineNum-3, nodeNum-4, best_val);
+	if (Xnration==MAX_GENS)
+	{
+		sheet->writeNum(machineNum - 3, nodeNum - 4, best_val);
+		outGenetic << best_val << endl;
+	}
 
 	return;
 }

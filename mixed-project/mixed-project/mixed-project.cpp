@@ -62,9 +62,10 @@ static std::uniform_real_distribution<double> u(0, 1);
 int my_i4_uniform_ab(int a, int b, int &seed);
 //--------------------------------------------------------------------------//
 
-fstream outGenetic("Genetic_ZAxisData.txt");
-
-fstream outCuckoo("Cuckoo_ZAxisData.txt");
+//定义文件输入输出-------------------------------------------------------------//
+ofstream outGenetic("Genetic_ZAxisData.txt");
+ofstream outCuckoo("Cuckoo_ZAxisData.txt");
+//定义文件输入输出-------------------------------------------------------------//
 
 Book* bookGenetic = xlCreateBookW();
 Sheet* sheetGen = bookGenetic->addSheet(L"Sheet1");
@@ -173,7 +174,7 @@ int main()
 
 	//---------------------------------------主要代码------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	for (int diedai = 5; diedai <= 35; diedai++)
+	for (int diedai = 5; diedai <= 50; diedai++)
 	{
 		for (int mm = 5; mm <=50 ; mm++)
 		{
@@ -408,7 +409,7 @@ void cuckoo()
 
 	//开始循环
 	double xOld[NODE_MAX] = {};
-	while (num < MaxIterationTimes)
+	while (num <= MaxIterationTimes)
 	{
 		//储存上次的最优解的X,Y
 		for (int i = 0; i < nodeNum; i++)
@@ -443,8 +444,11 @@ void cuckoo()
 		bool flag = false;
 		for (int j = 0; j < nodeNum; j++) 
 			nodeNew[j] = current_nestPop[BestNestCurrent].Xn[j];
-
-		sheetCuc->writeNum(machineNum-3, nodeNum-4, current_nestPop[BestNestCurrent].fitness);
+		if (num==MaxIterationTimes)
+		{
+			sheetCuc->writeNum(machineNum - 3, nodeNum - 4, current_nestPop[BestNestCurrent].fitness);
+			outCuckoo << current_nestPop[BestNestCurrent].fitness << endl;
+		}
 		//			printf("%lf\n", current_nestPop[BestNestCurrent].fitness);
 		num++;
 	}
