@@ -157,8 +157,29 @@ void evaluate()
 	int i;
 	double x[N_VARS + 1];
 
+	//计算机器累加量，如果两个节点机器相同那么时间累加（解决后面三位迭代图机器数量增加而时间不变的问题）
+//	double machineaccelerate[100] = {};
+	
+
+
+
 	for (member = 0; member < GROUP_SCALE; member++)
 	{
+		int times[100] = {};
+
+		for (int i = 0; i < 100; i++)
+		{
+			times[i] = 1;
+
+		}
+	
+			for (int j = 0; j < nodeNum; j++)
+			{
+				times[nodeMachine[member].Xn[j]]++;
+			}
+		
+
+
 		for (i = 0; i < nodeNum; i++)
 		{
 			int index;
@@ -167,6 +188,7 @@ void evaluate()
 			{
 				index = nodeMachine[member].Xn[i];
 				t = task[i], m = machine[index];
+			
 				if (fabs(m - 0) <= 0.0001)
 				{
 					throw 0;
@@ -176,7 +198,10 @@ void evaluate()
 			{
 				cerr << "Genetic 174行 发现异常 machine 为0" << endl;
 			}
-			nodes[i] = t / m;
+			//计算机器累加量，如果两个节点机器相同那么时间累加（解决后面三位迭代图机器数量增加而时间不变的问题）
+			//就是累加时间（这个算法之后再聊）
+			
+			nodes[i] = t / m * times[nodeMachine[member].Xn[i]];
 		}
 
 		criticalPath(graph, nodes, nodeNum);
@@ -526,8 +551,10 @@ void machineInit(double *machine, int length)
 	{
 		while (machine[i] == 0)
 		{
-			int m = i4_uniform_ab(0,20,seed);
+			int m = i4_uniform_ab(0,19,seed);
+			//printf("fffffff%dfffffff\n",m);
 			machine[i] = machineLow[m];
+			//printf("fffffff%lffffffff\n", machine[i]);
 		}
 	}
 }

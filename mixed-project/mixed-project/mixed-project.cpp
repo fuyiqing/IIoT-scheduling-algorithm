@@ -12,9 +12,10 @@
 #include<fstream>
 #include<vector>
 #include<random>
-
+int Mtimes[100] = {};
 using namespace libxl;
 
+double tryTT[50] = { 8109.173930,5886.238742,5014.530667,9216.922128,8810.200972,8047.743029,8417.088123,6000.087171,8465.080672,7610.864824,5805.104266,6387.395806,7961.309083,5721.762246,5658.066119,5117.268316,5928.579802,6640.734331,5821.901947,8706.018377,7050.861542,8829.946520,9911.157065,6816.791956,9822.400491,5085.062354,9642.990015,9733.178999,5539.446553,6478.208460,9249.589512,7850.940059,5749.569424,8013.306576,9643.620033,5321.904421,5247.603790,6476.898841,7238.826003,7948.633040,7675.507945,7262.037046,8056.630610,7790.663094,7674.631412,7530.149134,9216.497202,6668.482496,7185.306627,8448.478711 };
 
 //遗传算法的参数----------------------------------------------------------//
 int seed = 123456789;
@@ -61,6 +62,9 @@ static std::uniform_real_distribution<double> u(0, 1);
 int my_i4_uniform_ab(int a, int b, int &seed);
 //--------------------------------------------------------------------------//
 
+fstream outGenetic("Genetic_ZAxisData.txt");
+
+fstream outCuckoo("Cuckoo_ZAxisData.txt");
 
 Book* bookGenetic = xlCreateBookW();
 Sheet* sheetGen = bookGenetic->addSheet(L"Sheet1");
@@ -165,14 +169,23 @@ int main()
 	srand(time(nullptr));
 
 
+
+
 	//---------------------------------------主要代码------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	for (int diedai = 5; diedai <= 50; diedai++)
+	for (int diedai = 5; diedai <= 35; diedai++)
 	{
 		for (int mm = 5; mm <=50 ; mm++)
 		{
 			//先对机器、任务、图进行初始化并存在txt文件中
 			taskMachineGraphFunction(diedai,mm);
+
+		for (int irr = 0; irr <diedai; irr++)
+			{//尝试增大数据量，数据量过少会导致数据出现大偏差
+				task[irr] = tryTT[irr]/200;
+			}
+
+			task[0] = task[diedai - 1] = 0;
 
 			//首先开始进行遗传算法
 			genetic();
@@ -180,9 +193,14 @@ int main()
 			//其次开始布谷鸟算法
 			cuckoo();
 
+
 		}
 		
 	}
+
+	outCuckoo.close();
+	outGenetic.close();
+
 	//-------------------------------------主要代码---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	//保存并输出BookGen
@@ -345,6 +363,20 @@ void cuckoo()
 	int BestNestCurrent;
 
 
+
+	for (int i = 0; i < 100; i++)
+	{
+		Mtimes[i] = 1;
+
+	}
+
+	for (int i = 0; i < NestNum; i++)
+	{
+		for (int j = 0; j < nodeNum; j++)
+		{
+			Mtimes[nodeMachine[i].Xn[j]]++;
+		}
+	}
 	//初始化
 	for (int i = 0; i < NestNum; ++i)
 	{
@@ -353,10 +385,24 @@ void cuckoo()
 		{
 			nestinitial.Xn[j] = i4_uniform_ab(0, machineNum - 1, seed);
 		}
-		fitFunc(nestinitial);
+	///	fitFunc(nestinitial);
 		//		printf("%lf\n",nestinitial.fitness);
 		current_nestPop.push_back(nestinitial);
 	}
+
+	for (int i = 0; i < NestNum; i++)
+	{
+		for (int j = 0; j < nodeNum; j++)
+		{
+			Mtimes[current_nestPop[i].Xn[j]]++;
+		}
+	}
+
+	for (int i = 0; i < NestNum; i++)
+	{
+		fitFunc(current_nestPop[i]);
+	}
+
 	BestNestCurrent = findBetterNest(current_nestPop);
 
 
@@ -422,14 +468,28 @@ void fitFunc(Nest& nest)
 	int member;
 	int i;
 
+	for (int i = 0; i < 100; i++)
+	{
+		Mtimes[i] = 1;
+
+	}
+
+	for (int i = 0; i < nodeNum; i++)
+	{
+		Mtimes[nest.Xn[i]]++;
+	}
+
+
 	for (i = 0; i < nodeNum; i++)
 	{
 		int index;
 		double t, m;
+		int x;
 		try
 		{
 			index = nest.Xn[i];
 			t = task[i], m = machine[index];
+		//	x = Mtimes[index];
 			if (fabs(m - 0) <= 0.0001)
 			{
 				throw 0;
@@ -439,7 +499,10 @@ void fitFunc(Nest& nest)
 		{
 			std::cerr << "Genetic 174行 发现异常 machine 为0" << std::endl;
 		}
-		nodes[i] = t / m;
+
+		
+
+		nodes[i] = t / m*Mtimes[nest.Xn[i]];
 	}
 
 	criticalPath(graph, nodes, nodeNum);

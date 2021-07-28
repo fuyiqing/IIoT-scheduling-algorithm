@@ -7,9 +7,12 @@ using namespace std;
 #include<algorithm>
 #include<queue>
 #include<stack>
+#include"Genetic.h"
 #include<cmath>
 #include<string>
 #pragma warning(disable : 4996)
+
+extern Individual nodeMachine[GROUP_SCALE + 1];
 
 int randomInt(int low, int high)
 {
@@ -135,6 +138,8 @@ void graphRandom(MyGraph& graph)
 
 void criticalPath(MyGraph& graph, double* nodes, int length)
 {
+	double machinetimes[100] = {};
+
 	//首先对边的权值进行赋值
 	for (int i = 0; i < graph.nodeNum; i++)
 	{
@@ -143,6 +148,7 @@ void criticalPath(MyGraph& graph, double* nodes, int length)
 		while (arc != nullptr)
 		{
 			sum += nodes[i];
+	//		machinetimes[nodeMachine[]]
 			arc->weight = sum;
 			arc = arc->next;
 		}
