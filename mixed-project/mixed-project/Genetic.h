@@ -15,11 +15,12 @@ constexpr double machineMid[20] = { 550,280,120,180,150,200,300,252,500,600,800,
 constexpr double machineHigh[20] = { 2500,1000,2200,1800,1400,1500,1200,1100,1176,1900,2300,2500,2600,1600,1700,1800,1300,2200,3200,3000 };
 
 //遗传算法参数，种群规模（0~100）、繁殖代数、函数变量个数、交叉概率、编译概率
-# define GROUP_SCALE    10   
+# define GROUP_SCALE    50   
 # define MAX_GENS       500
 # define N_VARS         510
 # define P_MATING       0.8
 # define P_MUTATION     0.25
+# define MACHINE_NUM_MAX 20
 
 //低端机器：(50-100)/90M (保证最优值为0-1) 改到5000-10000
 //中端机器：
@@ -32,7 +33,7 @@ constexpr double machineHigh[20] = { 2500,1000,2200,1800,1400,1500,1200,1100,117
 //目的：将最优适应度值控制在0-1之间
 
 //适应度最大值
-#define FITNESS_MAX 10000000
+#define FITNESS_MAX 10000
 
 struct Individual
 {
@@ -62,7 +63,7 @@ void mutate(int &seed);
 double r8_uniform_ab(double a, double b, int &seed);
 int i4_uniform_ab(int a, int b, int &seed);
 
-void report(int Xnration, libxl::Sheet* sheet);
+void report(int& Xnration, libxl::Sheet* sheet);
 void selector(int &seed);
 void showTime();
 void Xover(int one, int two, int &seed);

@@ -13,6 +13,7 @@
 #include "libxl.h"
 
 using namespace libxl;
+extern double minGen;
 extern ofstream outGenetic;
 extern int seed;
 //extern  constexpr double machineLow[20];
@@ -288,7 +289,9 @@ void initGroup(int &seed)
 		for (i = 0; i < nodeNum; i++)
 		{
 			nodeMachine[j].Xn[i] = i4_uniform_ab(0, machineNum - 1, seed);
+			//printf(":%d", nodeMachine[j].Xn[i]);
 		}
+		//printf("\n");
 		//Population[j].Xn[i] = r8_uniform_ab(XnRange[i].Lower, XnRange[i].Upper, seed);
 	}
 	nodeMachine[GROUP_SCALE].Fitness = FITNESS_MAX;
@@ -394,7 +397,8 @@ double r8_uniform_ab(double a, double b, int &seed)
 }
 
 //输出每一代进化的结果
-void report(int Xnration, libxl::Sheet* sheet)
+
+void report(int& Xnration, libxl::Sheet* sheet)
 {
 	double avg;
 	double best_val;
@@ -406,13 +410,6 @@ void report(int Xnration, libxl::Sheet* sheet)
 
 
 
-	//	if (Xnration == 0)
-	//	{
-	//		cout << "\n";
-	//		cout << "  Xnration       Best            Average       Standard \n";
-	//		cout << "  number           value           Fitness       deviation \n";
-	//		cout << "\n";
-	//	}
 	sum = 0.0;
 	sum_square = 0.0;
 
@@ -427,16 +424,35 @@ void report(int Xnration, libxl::Sheet* sheet)
 	stddev = sqrt((sum_square - square_sum) / (GROUP_SCALE - 1));
 	best_val = nodeMachine[GROUP_SCALE].Fitness;
 
-	//	cout << "  " << setw(8) << Xnration
-//	cout << "  " << setw(14) << best_val << endl;
 	if (Xnration==MAX_GENS)
 	{
 		sheet->writeNum(machineNum - 3, nodeNum - 4, best_val);
 		outGenetic << best_val << endl;
+
+		for (int i = 0; i < nodeNum; i++)
+		{
+			printf("%d,", nodeMachine[GROUP_SCALE].Xn[i]);
+		}
+		printf("\n上面是机器个数为%d的运行时间为%lf的数组\n", machineNum, best_val);
+		for (int i = 0; i < machineNum; i++)
+		{
+			printf("%lf,", machine[i]);
+		}
+		printf("\n上面是个数为%d的机器数组\n", machineNum);
+
+		///if (best_val>=minGen)
+		///{
+			///Xnration--;
+		///}
+		///else
+			///minGen = best_val;
 	}
+
+
 
 	return;
 }
+
 
 //选择有交配权的父代
 void selector(int &seed)
@@ -545,7 +561,7 @@ void taskInit(double *task, int length)
 			continue;
 		}
 		//首先写低端的
-		task[i] = r8_uniform_ab(TASK_MIN,TASK_MAX,seed);
+		///task[i] = r8_uniform_ab(TASK_MIN,TASK_MAX,seed);
 	}
 }
 
@@ -555,7 +571,7 @@ void machineInit(double *machine, int length)
 	{
 		while (machine[i] == 0)
 		{
-			int m = i4_uniform_ab(0,19,seed);
+			int m = i4_uniform_ab(0,MACHINE_NUM_MAX-1,seed);
 			//printf("fffffff%dfffffff\n",m);
 			machine[i] = machineLow[m];
 			//printf("fffffff%lffffffff\n", machine[i]);

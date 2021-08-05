@@ -15,6 +15,11 @@
 int Mtimes[100] = {};
 using namespace libxl;
 
+
+//设置每次迭代的最小值 相同节点情况下必须使得机器越大最优值越小
+double minGen = 1000;
+double minCuc = 1000;
+
 double tryTT[50] = { 8109.173930,5886.238742,5014.530667,9216.922128,8810.200972,8047.743029,8417.088123,6000.087171,8465.080672,7610.864824,5805.104266,6387.395806,7961.309083,5721.762246,5658.066119,5117.268316,5928.579802,6640.734331,5821.901947,8706.018377,7050.861542,8829.946520,9911.157065,6816.791956,9822.400491,5085.062354,9642.990015,9733.178999,5539.446553,6478.208460,9249.589512,7850.940059,5749.569424,8013.306576,9643.620033,5321.904421,5247.603790,6476.898841,7238.826003,7948.633040,7675.507945,7262.037046,8056.630610,7790.663094,7674.631412,7530.149134,9216.497202,6668.482496,7185.306627,8448.478711 };
 
 //遗传算法的参数----------------------------------------------------------//
@@ -42,7 +47,7 @@ constexpr int MaxIterationTimes = 500;
 //被宿主发现的概率
 constexpr double Pa = 0.55;
 //最大种群规模
-# define N_VARS     510
+# define N_VARS   510
 //自变量结构体
 struct Nest {
 	int Xn[N_VARS];      //存放变量值(即机器索引)
@@ -63,8 +68,8 @@ int my_i4_uniform_ab(int a, int b, int &seed);
 //--------------------------------------------------------------------------//
 
 //定义文件输入输出-------------------------------------------------------------//
-ofstream outGenetic("Genetic_ZAxisData.txt");
-ofstream outCuckoo("Cuckoo_ZAxisData.txt");
+ofstream outGenetic("lowGen.txt");
+ofstream outCuckoo("lowCuc.txt");
 //定义文件输入输出-------------------------------------------------------------//
 
 Book* bookGenetic = xlCreateBookW();
@@ -155,15 +160,15 @@ int main()
 	//输入genetic对应的适应度
 	sheetGen->writeStr(1, 0, L"横轴节点个数纵轴机器个数");
 	for (int nodeG = 5; nodeG <= 50; nodeG++)
-		sheetGen->writeNum(1, nodeG - 4, nodeG);
+	sheetGen->writeNum(1, nodeG - 4, nodeG);
 	//sheetGen->writeStr(2,0,L"机器个数");
-	for (int iiG = 5; iiG <= 50; iiG++)
-		sheetGen->writeNum(iiG -3, 0, iiG);
+		for (int index = 5; index <= 50; index++)
+		  sheetGen->writeNum(index- 3, 0, index);
 
 	//输入cuckoo对应的适应度
 	sheetCuc->writeStr(1, 0, L"横轴节点个数纵轴机器个数");
 	for (int i = 5; i <= 50; i++)
-		sheetCuc->writeNum(i -3, 0, i);
+		sheetCuc->writeNum(i - 3, 0, i);
 	for (int i = 5; i <= 50; i++)
 		sheetCuc->writeNum(1, i - 4, i);
 
@@ -176,17 +181,36 @@ int main()
 
 	for (int diedai = 5; diedai <= 50; diedai++)
 	{
+		minGen = minCuc = 100;
+		//先对机器、任务、图进行初始化并存在txt文件中
+		taskMachineGraphFunction(diedai, 50);
+		printf("\ntask个数wei%d\n",taskNum);
+		for (int i = 0; i < nodeNum; i++)
+		{
+			Arc* arc = graph.nodes[i].edge;
+			while (arc)
+			{
+				printf("%d->%d,", i, arc->go);
+				arc = arc->next;
+			}
+			printf("\n");
+		}
+		printf("结点个数为%d的图的表述结束\n", nodeNum);
+		
 		for (int mm = 5; mm <=50 ; mm++)
 		{
-			//先对机器、任务、图进行初始化并存在txt文件中
-			taskMachineGraphFunction(diedai,mm);
-
+			machineNum = mm;
+			printf("\nmachine个数为%d\n",machineNum);
 		for (int irr = 0; irr <diedai; irr++)
 			{//尝试增大数据量，数据量过少会导致数据出现大偏差
-				task[irr] = tryTT[irr]/200;
+				task[irr] = tryTT[irr]/20000/4;
 			}
 
 			task[0] = task[diedai - 1] = 0;
+
+			for (int i = 0; i < taskNum; i++)
+				printf("%lf,", task[i]);
+			printf("任务数量为%d的task数组的表述结束\n", taskNum);
 
 			//首先开始进行遗传算法
 			genetic();
@@ -331,7 +355,7 @@ void genetic()
 	//开始遗传迭代了
 	int Xnration = 0;
 
-	for (Xnration = 0; Xnration < MAX_GENS; Xnration++)
+	for (Xnration = 0; Xnration <= MAX_GENS; Xnration++)
 	{
 		selector(seed);
 		crossover(seed);
@@ -386,7 +410,7 @@ void cuckoo()
 		{
 			nestinitial.Xn[j] = i4_uniform_ab(0, machineNum - 1, seed);
 		}
-	///	fitFunc(nestinitial);
+    	fitFunc(nestinitial);
 		//		printf("%lf\n",nestinitial.fitness);
 		current_nestPop.push_back(nestinitial);
 	}
@@ -448,6 +472,10 @@ void cuckoo()
 		{
 			sheetCuc->writeNum(machineNum - 3, nodeNum - 4, current_nestPop[BestNestCurrent].fitness);
 			outCuckoo << current_nestPop[BestNestCurrent].fitness << endl;
+			///if (minCuc<= current_nestPop[BestNestCurrent].fitness)
+				///num--;
+			///else
+				///minCuc = current_nestPop[BestNestCurrent].fitness;
 		}
 		//			printf("%lf\n", current_nestPop[BestNestCurrent].fitness);
 		num++;
